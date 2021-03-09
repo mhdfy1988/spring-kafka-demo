@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -79,5 +80,22 @@ public class Consmer {
     			log.info("------------------message : " + message);       
     		}  
         }
+	}
+	
+	/**
+	 * 批量消费
+	 * @param records
+	 */
+	@KafkaListener(groupId="testGroup-3",  topics = "test",containerFactory="batchFactory")
+    public void consumerBatchWithConsumerRecords(ConsumerRecords<String, String> records){
+        log.info("接收到消息数量：{}",records.count());
+        records.forEach((ConsumerRecord<String, String> record) -> {
+    		Optional<?> kafkaMessage = Optional.ofNullable(record.value());        
+    		if (kafkaMessage.isPresent()) {            
+    			Object message = kafkaMessage.get();            
+    			log.info("----------------- record :" + record);            
+    			log.info("------------------message : " + message);       
+    		}  
+        });
 	}
 }

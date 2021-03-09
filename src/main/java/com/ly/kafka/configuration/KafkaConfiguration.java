@@ -17,7 +17,6 @@ public class KafkaConfiguration {
 	    factory.setConcurrency(10);
 	    factory.getContainerProperties().setPollTimeout(1500);
 	    factory.setBatchListener(true);//设置为批量消费，每个批次数量在Kafka配置参数中设置
-
 	    return factory; 
 	}
 	
