@@ -7,6 +7,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.KafkaListeners;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
@@ -88,6 +89,24 @@ public class Consmer {
 	 */
 	@KafkaListener(groupId="testGroup-3",  topics = "test",containerFactory="batchFactory")
     public void consumerBatchWithConsumerRecords(ConsumerRecords<String, String> records){
+        log.info("接收到消息数量：{}",records.count());
+        records.forEach((ConsumerRecord<String, String> record) -> {
+    		Optional<?> kafkaMessage = Optional.ofNullable(record.value());        
+    		if (kafkaMessage.isPresent()) {            
+    			Object message = kafkaMessage.get();            
+    			log.info("----------------- record :" + record);            
+    			log.info("------------------message : " + message);       
+    		}  
+        });
+	}
+	
+	/**
+	 * 批量消费多个Listener  分开消费的，相当于2个线程
+	 * @param records
+	 */
+	@KafkaListeners({@KafkaListener(groupId="testGroup-4",  topics = "test",containerFactory="batchFactory"),
+			@KafkaListener(groupId="testGroup-4",  topics = "test1",containerFactory="batchFactory")})
+    public void consumerBatchWithListeners(ConsumerRecords<String, String> records){
         log.info("接收到消息数量：{}",records.count());
         records.forEach((ConsumerRecord<String, String> record) -> {
     		Optional<?> kafkaMessage = Optional.ofNullable(record.value());        
